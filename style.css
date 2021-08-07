@@ -14,6 +14,7 @@ html, body {
 
 .container {
     height: 80vh;
+    padding: 0 20px;
 }
 
 #paused {
@@ -34,6 +35,7 @@ html, body {
 
 .timer_starter {
     display: flex;
+    flex-flow: row wrap;
     justify-content: center;
 }
 
@@ -50,6 +52,7 @@ html, body {
 
 .controls {
     display: flex;
+    flex-flow: row wrap;
     justify-content: center;
     align-items: center;
     padding: 10px 20px;
@@ -57,10 +60,14 @@ html, body {
 
 .controls button,
 .timer_starter button {
-    margin: 0 10px;
+    margin: 5px 10px;
     padding: 5px 10px;
     border-radius: 5px;
     border: 1px solid;
+}
+
+#startButton {
+    margin: 10px;
 }
 
 .controls button:enabled:hover {
@@ -90,4 +97,5 @@ input[readonly] {
 .footer {
     text-align: center;
     padding: 5px 10px;
+    line-height: 1.5;
 }

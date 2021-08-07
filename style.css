@@ -1,0 +1,93 @@
+html, body {
+    margin: 0;
+}
+
+*{
+    background: #fafafa;
+    font-family: Arial, Poppins, sans-serif;
+}
+
+.app {
+    height: 100vh;
+    width: 100%;
+}
+
+.container {
+    height: 80vh;
+}
+
+#paused {
+    font-size: 1.2rem;
+}
+
+.remaining_time {
+    height: 30vh;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.timer_starter {
+    display: flex;
+    justify-content: center;
+}
+
+.timer_starter label {
+    margin-right: 10px;
+    padding: 1px 2px;
+}
+
+.timer_starter input {
+    border: 0;
+    border-bottom: 1px solid #000;
+    outline: 0 solid transparent;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.controls button,
+.timer_starter button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid;
+}
+
+.controls button:enabled:hover {
+    background-color: blue;
+    color: white;
+    transition: .05s;
+}
+
+input[readonly] {
+    cursor: not-allowed;
+}
+
+.controls button[id=resetSession]:enabled:hover {
+    background-color: blue;
+    color: red;
+    transition: .05s;
+}
+
+.timer_starter button:enabled:hover {
+    background-color: orange;
+    color: white;
+    transition: .05s;
+}
+
+
+/*************/
+.footer {
+    text-align: center;
+    padding: 5px 10px;
+}

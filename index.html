@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <div class="container">
+        <div class="remaining_time">
+            <span id="paused"></span> <br />
+            Time remaining
+            <br/>
+            <span id="display"></span>
+            <br>
+        </div>
+        <div class="timer_starter">
+            <label for="time">Time in minutes</label>
+            <input type="text" id="time" placeholder="60"/>
+            <button type="button" id="startButton" onclick="startSession()">Start timer</button>
+        </div>
+        <div class="controls">
+            <button class="stop" type="button" id="pauseSession" onclick="pauseSession()">Pause timer</button>
+            <button class="stop" type="button" id="continueSession" onclick="continueSession()" disabled>Continue timer</button>
+            <button class="stop" type="button" id="resetSession" onclick="resetSession()">Stop and Reset timer</button>
+        </div>
+    </div>
+    <div class="footer">
+        Written by <a href="https://twitter.com/_murageh" target="_blank">MURAGEH</a> on 7th August 2021.
+    </div>
+</div>
+</body>
+
+<script>
+    let startTime = 0, endTime = 0, isPaused = false, remainingTime = 0, initialDuration = 0;
+    let activeSession = {
+        startTime,
+        endTime,
+        isPaused,
+        remainingTime
+    }
+    let display = document.getElementById("display");
+    const timeEl = document.getElementById("time");
+    const resetButton = document.getElementById("resetSession");
+    const startButton = document.getElementById("startButton");
+    const pauseButton = document.getElementById("pauseSession");
+    const continueButton = document.getElementById("continueSession");
+    const pausedEl = document.getElementById("paused");
+    let timerInterval;
+
+    const startSession = () => {
+        const durationInMillis = (parseInt(timeEl.value, 10) * 60 * 1000) ?? 0;
+        // console.log("starting timer for " + durationInMillis / 1000 + " seconds");
+        initialDuration = parseInt(timeEl.value, 10) ?? 0;
+        startTime = Date.now();
+        endTime = startTime + durationInMillis;
+
+        localStorage.setItem("startTime", startTime);
+        localStorage.setItem("endTime", endTime);
+        localStorage.setItem("isPaused", isPaused);
+        localStorage.setItem("remainingTime", remainingTime);
+        localStorage.setItem("initialDuration", initialDuration);
+
+        if (durationInMillis > 0) {
+            startCountDown(durationInMillis / 1000);
+            timeEl.readOnly = true;
+        }
+    }
+
+    const resetSession = () => {
+        startTime = 0;
+        endTime = 0;
+        isPaused = false;
+        remainingTime = 0;
+        initialDuration = 0;
+        localStorage.clear()
+        window.clearInterval(timerInterval);
+        resetButton.style.background = "#EFEFEF";
+        display.textContent = "00:00:00"
+        timeEl.readOnly = false;
+        resetButton.disabled = true;
+        startButton.disabled = false;
+        pauseButton.disabled = true;
+        continueButton.disabled = true;
+    }
+
+    const pauseSession = () => {
+        if (!isPaused) {
+            remainingTime = endTime - Date.now();
+            localStorage.setItem("remainingTime", remainingTime);
+            localStorage.setItem("isPaused", "true");
+            window.clearInterval(timerInterval);
+            pausedEl.textContent = "Paused";
+            isPaused = true;
+            resetButton.disabled = false;
+            pauseButton.disabled = true;
+            continueButton.disabled = false;
+            startButton.disabled = true;
+        }
+    }
+
+    const continueSession = () => {
+        if (isPaused) {
+            console.log("yes")
+            let rTime = parseInt(localStorage.getItem("remainingTime")) ?? 0;
+            startTime = Date.now();
+            endTime = startTime + rTime;
+
+            localStorage.setItem("startTime", startTime);
+            localStorage.setItem("endTime", endTime);
+            localStorage.setItem("isPaused", "false");
+            startCountDown((endTime - startTime) / 1000);
+            pausedEl.textContent = "";
+            isPaused = false;
+            resetButton.disabled = false;
+            pauseButton.disabled = false;
+            continueButton.disabled = true;
+            startButton.disabled = true;
+        }
+    }
+
+    const startCountDown = (duration) => {
+        let timer = duration, hours, minutes, seconds;
+        timerInterval = setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = hours + ":" + minutes + ":" + seconds;
+            resetButton.style.background = "#0080ff";
+            pauseButton.disabled = false;
+            startButton.disabled = true;
+            resetButton.disabled = false;
+
+            if (--timer < 0) {
+                resetButton.style.background = "#EFEFEF";
+                resetSession();
+            }
+        }, 1000);
+    }
+
+    const checkIfExistingSession = () => {
+        const start = parseInt(localStorage.getItem("startTime")) ?? 0;
+        const end = parseInt(localStorage.getItem("endTime")) ?? 0;
+        const paused = ((localStorage.getItem("isPaused")) === "true");
+        const rTime = parseInt(localStorage.getItem("remainingTime")) ?? 0;
+        const initialD = parseInt(localStorage.getItem("initialDuration")) ?? 0;
+
+        if (start > 0 && end >= Date.now() && !paused) {
+            startTime = start;
+            endTime = end;
+            isPaused = paused;
+            remainingTime = rTime;
+            initialDuration = initialD;
+            timeEl.value = isNaN(initialDuration) ? 0 : initialDuration;
+            timeEl.readOnly = true;
+            startCountDown((endTime- Date.now()) / 1000);
+            continueButton.disabled = true;
+            pauseButton.disabled = false;
+        } else if (paused) {
+            isPaused = paused;
+            remainingTime = rTime;
+
+            startTime = Date.now();
+            endTime = startTime + rTime;
+
+            initialDuration = initialD;
+            timeEl.value = isNaN(initialDuration) ? 0 : initialDuration;
+            timeEl.readOnly = true;
+
+            let timer = (endTime - startTime) / 1000;
+
+            let hours = parseInt(timer / 3600, 10);
+            let minutes = parseInt(timer / 60, 10);
+            let seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = hours + ":" + minutes + ":" + seconds;
+            resetButton.style.background = "#0080ff";
+            pauseButton.disabled = true;
+            continueButton.disabled = false;
+
+            pausedEl.textContent = "Paused";
+        } else{
+            resetSession();
+        }
+    }
+
+    window.onload = function () {
+        checkIfExistingSession();
+        timeEl.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                startSession();
+            }
+        });
+    };
+</script>
+</html>

@@ -4,7 +4,7 @@
 This is a simple countdown timer written in Vanilla javascript.
 
 ### Data Persistence
-The setup allows for pausing and resuming of the timer using persisted data for the localStorage.
+The setup allows for pausing and resuming of the timer using persisted data from the localStorage.
 
 
 

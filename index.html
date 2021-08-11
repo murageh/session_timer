@@ -114,7 +114,7 @@
             localStorage.setItem("startTime", startTime);
             localStorage.setItem("endTime", endTime);
             localStorage.setItem("isPaused", "false");
-            startCountDown((endTime - startTime) / 1000);
+            startCountDown(Math.ceil((endTime - startTime) / 1000));
             pausedEl.textContent = "";
             isPaused = false;
             resetButton.disabled = false;
@@ -179,9 +179,9 @@
 
             let timer = (endTime - startTime) / 1000;
 
-            let hours = parseInt(timer / 3600, 10);
-            let minutes = parseInt(timer / 60, 10);
-            let seconds = parseInt(timer % 60, 10);
+            let hours = parseInt(Math.ceil(timer / 3600), 10);
+            let minutes = parseInt(Math.ceil(timer / 60), 10);
+            let seconds = parseInt(Math.ceil(timer % 60), 10);
 
             hours = hours < 10 ? "0" + hours : hours;
             minutes = minutes < 10 ? "0" + minutes : minutes;
